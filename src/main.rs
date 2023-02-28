@@ -1,22 +1,5 @@
-use std::{env, fs, process};
-
-struct Config {
-    query: String,
-    filename: String,
-}
-
-impl Config {
-    fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("недостаточно аргументов");
-        }
-
-        let query = args[1].clone();
-        let filename = args[2].clone();
-
-        Ok(Config { query, filename })
-    }
-}
+use std::{env, process};
+use minigrep::Config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -29,8 +12,8 @@ fn main() {
     println!("Поиск {}", config.query);
     println!("В файле {}", config.filename);
 
-    let contents =
-        fs::read_to_string(config.filename).expect("Что-то пошло не так при чтении файла");
-
-    println!("С текстом:\n{}", contents);
+    if let Err(e) = minigrep::run(config) {
+        println!("Ошибка в приложении: {}", e);
+        process::exit(1);
+    }
 }
